@@ -1,0 +1,106 @@
+<html>
+</head>
+<style>
+    p {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey}
+    p.middle {border-left:5px solid black}
+    p.x {border:2px solid black}
+    div {clear:left}
+</style>
+</head>
+<body>
+    <h1>Quick Sort</h1>
+Procedura <b>partition</b> stawia grubą kreskę, przez którą liczby nie mogą już przechodzić.
+<hr>
+    <p></p>
+    <div></div>
+
+</body>
+
+<script>
+    let N=20;
+    for(let i=0;i<N;i++)
+        //document.querySelector("div").innerHTML+="<p>1</p>";
+        document.querySelector("div").innerHTML+="<p>"+parseInt(Math.random()*N)+"</p>";
+    let p=document.querySelectorAll("div>p");
+    let X=document.querySelector("p");
+
+function* partition(i,j)
+{
+    if(i+1==j)
+        return;
+    for(let k=i;k<j;k++)
+        p[k].style.background='';
+    let mid=Math.floor((i+j)/2);
+    let x=+p[mid].innerHTML;
+    p[mid].style.border="3px solid black";
+    p[mid].style.fontWeight="bold";
+    
+    let a=i-1,b=j;
+    while(true)
+    {   
+        
+        X.innerHTML=p[mid].innerHTML;
+        do{ 
+            X.style.background='yellow';
+            yield ++a;
+            p[a].style.background='lightblue';
+        } 
+        while(+p[a].innerHTML<x);
+        p[a].style.background=p[a].innerHTML==x && false?'yellow':'pink';
+        do{ X.style.background='yellow';
+            yield --b;
+            p[b].style.background='pink';
+        } while(+p[b].innerHTML>x);
+        p[b].style.background= p[b].innerHTML==x && false?'yellow':'lightblue';
+        if(a<b)
+        {   yield;
+            let y = p[a].innerHTML;
+            p[a].innerHTML=p[b].innerHTML;
+            p[b].innerHTML=y;
+            if(a==mid || b==mid)
+            {
+                p[mid].style.border=''
+                p[mid].style.fontWeight=''
+                mid=a+b-mid;
+                p[mid].style.border='3px solid black';
+                p[mid].style.fontWeight='bold';
+            }
+            p[a].style.background='lightblue';
+            p[b].style.background='pink';
+            yield;
+        }
+        else
+        {   
+            p[a].className='middle';
+            yield;
+            for(let x=i;x<j;x++)
+                p[x].style=background='';
+            if(a==j-1)
+                p[a].style.background='lightgreen';
+            if(a==i+1)
+                p[i].style.background='lightgreen';
+            return a;
+        }
+    }
+}
+
+function* qsort(i,j)
+{
+    if(i+1<j)
+    {
+        let k=yield* partition(i,j);
+        yield k;
+        yield* qsort(i,k);
+        yield* qsort(k,j);
+    }
+    for(let k=i;k<j;k++)
+        p[k].style.background='lightgreen';
+}
+
+let a=qsort(0,N);
+a.next();
+
+let x=setInterval(()=>{if(a.next().done) clearInterval(x)},500);
+
+</script>
+</html>

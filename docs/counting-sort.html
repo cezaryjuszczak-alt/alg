@@ -1,0 +1,51 @@
+<html>
+</head>
+<style>
+    p {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey}
+    div{clear:both;height:40px}
+    b{float:left}
+</style>
+</head>
+<body>
+    <h1>Counting Sort</h1>
+    <section></section>
+    <main></main>
+</body>
+
+<script>
+    let N=30;
+    let M=20;
+    let s=document.querySelector("section");
+    let m=document.querySelector("main");
+    for(let i=0;i<N;i++)
+        s.innerHTML+="<p>"+Math.floor(Math.random()*M)+"</p>";
+
+    for(let i=0;i<M;i++)
+        m.innerHTML+="<div><b>"+i+": </b></div>";
+    let p=document.querySelectorAll("p");
+    let div=document.querySelectorAll("div");
+    for(let x of p)
+        x.style.background="rgb("+(100+Math.random()*155)+','+(100+Math.random()*155)+','+(100+Math.random()*155)+')';
+
+function *counting_sort()
+{   for(let x of p)
+    {
+        yield;
+        div[Math.floor(x.innerHTML)].append(x);
+    }
+    for(let x of div)
+    {
+        for(let y of x.querySelectorAll("p"))
+        {   
+            yield 1;
+            s.append(y);
+        }
+    }
+}
+
+let a=counting_sort();
+
+let x=setInterval(()=>{if(a.next().done) clearInterval(x)},500);
+
+</script>
+</html>

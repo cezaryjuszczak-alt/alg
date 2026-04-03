@@ -1,0 +1,56 @@
+<html>
+</head>
+<style>
+    p {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey}
+</style>
+</head>
+<body>
+    <h1>Insertion Sort</h1>
+</div>
+</body>
+
+<script>
+    let N=30;
+    for(let i=0;i<N;i++)
+        document.body.innerHTML+="<p>"+parseInt(Math.random()*100)+"</p>";
+    let p=document.querySelectorAll("p");
+
+function* isort()
+{
+    for(let i=1;i<N;i++)
+    {   
+        p[i-1].style.background="lightgreen";
+        p[i].style.background="yellow";
+        if(p[i].previousSibling)
+            p[i].previousSibling.style.background="yellow";
+        yield 1;
+        let moved=false; 
+        while(p[i].previousSibling && +p[i].previousSibling.innerHTML>+p[i].innerHTML)
+        {   
+            p[i].previousSibling.style.background="red";
+            p[i].previousSibling.before(p[i]);        
+            if(p[i].previousSibling)
+                p[i].previousSibling.style.background="yellow";
+            yield 1;
+            p[i].nextSibling.style.background="lightgreen";
+            if(p[i].previousSibling)
+                p[i].previousSibling.style.background="yellow";
+            moved=true;
+        }
+        if(moved)
+        {
+            p[i].style.background="red";
+            yield 1;
+        }
+        p[i].style.background="lightgreen";
+        if(p[i].previousSibling)
+            p[i].previousSibling.style.background="lightgreen";
+    }
+}
+
+let a=isort();
+
+let x=setInterval(()=>{if(a.next().done) clearInterval(x)},500);
+
+</script>
+</html>

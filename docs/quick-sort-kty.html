@@ -1,0 +1,122 @@
+<html>
+</head>
+<style>
+    p {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey}
+    p.middle {border-left:5px solid black}
+    p.found{background:red;color:white}
+</style>
+</head>
+<body>
+    <h1>Algorytm Hoare'a - ITY</h1>
+Procedura <b>partition</b> stawia grubą kreskę, przez którą liczby nie mogą już przechodzić.
+Kliknij komórkę tabeli.
+    <div></div>
+
+</body>
+
+<script>
+    let N=20;
+    for(let i=0;i<N;i++)
+        document.querySelector("div").innerHTML+="<p>"+parseInt(Math.random()*100)+"</p>";
+    let p=document.querySelectorAll("p");
+    let clock;
+
+function* partition(i,j)
+{
+    for(let k=i;k<j;k++)
+        p[k].style.background='';
+    let mid=Math.floor((i+j)/2);
+    let x=+p[mid].innerHTML;
+    
+    let a=i-1,b=j;
+    while(true)
+    {
+        p[mid].style.background='yellow';
+        do{               
+            p[a+1].style.background='yellow';
+            yield ++a;
+            p[a].style.background='';
+        } 
+        while(+p[a].innerHTML<x);
+        p[mid].style.background='yellow';
+        do{
+            p[b-1].style.background='yellow';
+            yield --b;
+            p[b].style.background='';
+        } while(+p[b].innerHTML>x);
+        p[mid].style.background='';
+        if(a<b)
+        {   
+            p[a].style.background='pink';
+            p[b].style.background='pink';
+            let y = p[a].innerHTML;
+            p[a].innerHTML=p[b].innerHTML;
+            p[b].innerHTML=y;
+            yield 1;
+            p[a].style.background='';
+            p[b].style.background='';
+        }
+        else
+        {
+            p[a].className='middle';
+            if(a==j-1)
+                p[a].style.background='lightgreen';
+            if(a==i+1)
+                p[i].style.background='lightgreen';
+
+            return a;
+        }
+    }
+}
+
+function* qsort(i,j)
+{
+    if(i+1<j)
+    {
+        let k=yield* partition(i,j);
+        yield k;
+        yield* qsort(i,k);
+        yield* qsort(k,j);
+    }
+    for(let k=i;k<j;k++)
+        p[k].style.background='lightgreen';
+}
+
+function* ity(i,j,I)
+{
+    if(i+1<j)
+    {
+        let k=yield* partition(i,j);
+        yield k;
+        if(I<k)
+            yield* ity(i,k,I);
+        else
+            yield* ity(k,j,I);
+    }
+    else
+    {
+        p[I].className='found'
+        p[I].style.background=''
+    }
+}
+
+function ITY()
+{
+    this.style.border="3px solid black";
+    clearInterval(clock);
+    for(let x of p)
+        p.className='';
+    let a=ity(0,N,this.i);
+    a.next();
+    clock =setInterval(()=>{if(a.next().done) clearInterval(clock)},500);
+}
+
+let i=0;
+for(let x of p)
+{
+    x.i=i++;
+    x.onclick=ITY;
+}
+
+</script>
+</html>

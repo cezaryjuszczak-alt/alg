@@ -1,0 +1,109 @@
+<html>
+</head>
+<style>
+    p,div {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey;height:20px;width:20px}
+    p:first-of-type,div:first-of-type {clear:both}
+</style>
+</head>
+<body>
+    <h1>Half Copying <span onclick="a1()">Merge</span> <span onclick="a2()">Sort</span></h1>
+</body>
+
+<script>
+    let N=31;
+    for(let i=0;i<Math.ceil(N/2);i++)
+        document.body.innerHTML+="<div></div>";
+    for(let i=0;i<N;i++)
+        document.body.innerHTML+="<p>"+parseInt(Math.random()*100)+"</p>";
+    let t=document.querySelectorAll("p");
+    let b=document.querySelectorAll("div");
+    let level=2;
+    function* hcmerge(t1,i,k1,t,l,k)
+    {
+      let j=l+k1-i;
+      let wyp=(k-l==N || level==2);
+      for(;;)
+      { 
+          t1[i].style.background='yellow';
+          t[j].style.background='yellow';
+          if(wyp) yield 1;
+        if(+t1[i].innerHTML<=+t[j].innerHTML)
+        {
+          t[l++].innerHTML=t1[i++].innerHTML;
+          t[l-1].style.background='lightgreen';
+          t1[i-1].innerHTML='';
+          t1[i-1].style.background='';
+          t[j].style.background=''
+
+          if(i==k1)
+          {
+            while(l<k)
+            {
+              t[l++].style.background='lightgreen';
+            }
+            return;   
+          } 
+        }
+        else
+        { 
+          t[l++].innerHTML=t[j++].innerHTML;
+          t[l-1].style.background='lightgreen';
+          t[j-1].innerHTML='';
+          t[j-1].style.background='';
+          t1[i].style.background='';
+          if(j==k) break;
+        }
+      }
+      do{ 
+        if(wyp) yield 1;          
+        t[l++].innerHTML=t1[i++].innerHTML;
+        t[l-1].style.background='lightgreen';
+        t1[i-1].innerHTML='';
+        t1[i-1].style.background='';
+        
+      }while(i!=k1);
+    }
+    
+    function* ipms(t,i,n,b,l)
+    {
+      if(n-i>1)
+      {let s=Math.ceil((i+n)/2);
+        //t[s].style.background='yellow';
+//        if(n-i==N) yield 1;
+        yield* cms(t,i,s,b,l);
+  //      if(n-i==N) yield 1;
+        yield* ipms(t,s,n,t,i);
+        //if(n-i==N) yield 1;
+        yield* hcmerge(b,l,l+s-i,t,i,n);
+      }
+    }
+    
+    function* cms(t,i,n,b,j)
+    {
+      if(n-i>1)
+      { let s=Math.floor((i+n)/2);
+        yield* ipms(t,i,s,b,j);
+        yield* cms(t,s,n,b,j+s-i);
+        yield* hcmerge(t,i,s,b,j,j+n-i);
+      }
+      else
+      { if(level==2) yield 1;
+        b[j].innerHTML=t[i].innerHTML;
+        b[j].style.background='lightgreen';
+        t[i].innerHTML='';
+        t[i].style.background='';
+      }
+    }
+function a1(){    
+  level=1;
+  let a=ipms(t,0,N,b,0);
+  let x=setInterval(()=>{if(a.next().done) clearInterval(x)},1500);
+}
+function a2(){    
+  level=2;
+  let a=ipms(t,0,N,b,0);
+  let x=setInterval(()=>{if(a.next().done) clearInterval(x)},300);
+}
+
+</script>
+</html>

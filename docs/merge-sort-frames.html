@@ -1,0 +1,106 @@
+<html>
+</head>
+<style>
+    p {
+        width: auto;
+        display: inline-block;        
+        margin: auto;
+        padding: 5px;
+        border: 1px solid grey;
+        height: 20px;
+        width: 20px;
+        vertical-align: middle
+    }
+
+    div>div {
+        border: 2px solid black;
+        display: inline-block;
+        text-align: center;
+    }
+    div>div>div>p { display:block;}
+    div>div {vertical-align: top}
+
+</style>
+</head>
+
+<body>
+    <h1>Merge Sort</h1>
+    <div id="sorting"></div>
+    </div>
+</body>
+
+<script>
+    let N = 30;
+    for (let i = 0; i < N; i++)
+        sorting.innerHTML += "<div><p>" + parseInt(Math.random() * 100) + "</p></div>";
+
+    // for (let i = 0; i < N; i++)
+    //     helper.innerHTML += "<p></p>";
+    let t = sorting.querySelectorAll("p");
+
+    function* merge(a, b) {
+        let x = document.createElement(a.tagName);
+        a.before(x)
+        x.append(a);
+        x.append(b);
+        for(let x of a.children)
+            x.style.background='yellow'
+        for(let x of b.children)
+            x.style.background='pink'
+        yield;
+        let y;
+        while (a.firstChild && b.firstChild) {    
+            if (+a.firstChild.innerHTML <= +b.firstChild.innerHTML)
+                a.before(y=a.firstChild)
+            else
+                a.before(y=b.firstChild)
+
+            if (!a.firstChild)
+                a.remove();
+            if (!b.firstChild)
+                b.remove();
+            yield;
+            //y.style.background='';
+            
+        }
+        
+        while (y=a.firstChild)
+        {   
+            a.before(a.firstChild)
+            if (a.firstChild)
+                yield;
+            else
+                a.remove();
+            //y.style.background='';
+        }
+        while (y=b.firstChild)
+        {
+            b.before(b.firstChild)
+            if (b.firstChild)
+                yield;
+            else
+                b.remove();
+            //y.style.background='';
+        }
+        for(let t of x.children)
+            t.style.background=''
+    }
+
+
+    function* merge_sort(a) {
+        
+        while (a.children.length > 1) {
+           for(let i=0;i<a.children.length;i+=1)
+                if (i+1<a.children.length)
+                    yield* merge(a.children[i], a.children[i+1])
+        }
+    }
+
+    let a = merge_sort(sorting);
+    a.next();
+
+    let x = setInterval(() => { if (a.next().done) clearInterval(x) }, 300);
+
+</script>
+
+</html>

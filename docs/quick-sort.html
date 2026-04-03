@@ -1,0 +1,80 @@
+<html>
+</head>
+<style>
+    p {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey}
+</style>
+</head>
+<body>
+    <h1>Quick Sort</h1>
+</div>
+</body>
+
+<script>
+    let N=20;
+    for(let i=0;i<N;i++)
+        document.body.innerHTML+="<p>"+parseInt(Math.random()*100)+"</p>";
+    let p=document.querySelectorAll("p");
+
+function* partition(i,j)
+{
+    for(let k=i;k<j;k++)
+        p[k].style.background='pink';
+    let x=+p[parseInt((i+j)/2)].innerHTML;
+    p[parseInt((i+j)/2)].style.background='yellow';
+    let a=i-1,b=j;
+    while(true)
+    {
+        p[b-1].style.background='yellow';
+        do{ if(a>=i)
+                p[a].style.background='';
+            p[a+1].style.background='yellow';
+            yield ++a;
+        } 
+        while(+p[a].innerHTML<x);
+        do{
+            if(b<j)
+                p[b].style.background='';
+            p[b-1].style.background='yellow';
+            yield --b;
+        
+        } while(+p[b].innerHTML>x);
+        if(a<b)
+        {   
+            p[a].style.background='red';
+            p[b].style.background='red';
+            let y = p[a].innerHTML;
+            p[a].innerHTML=p[b].innerHTML;
+            p[b].innerHTML=y;
+            yield 1;
+            p[a].style.background='';
+            p[b].style.background='';
+        }
+        else
+        {
+            for(let k=i;k<j;k++)
+                p[k].style.background='';
+            return a;
+        }
+    }
+}
+
+function* qsort(i,j)
+{
+    if(i+1<j)
+    {
+        let k=yield* partition(i,j);
+        yield k;
+        yield* qsort(i,k);
+        yield* qsort(k,j);
+    }
+    for(let k=i;k<j;k++)
+        p[k].style.background='lightgreen';
+}
+
+let a=qsort(0,N);
+a.next();
+
+let x=setInterval(()=>{if(a.next().done) clearInterval(x)},300);
+
+</script>
+</html>

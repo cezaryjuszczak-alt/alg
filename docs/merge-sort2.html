@@ -1,0 +1,106 @@
+<html>
+</head>
+<style>
+    p,div {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey;height:20px;width:20px}
+    div:first-of-type {clear:both}
+</style>
+</head>
+<body>
+    <h1>Merge Sort (w/o unnecessary copying)</h1>
+</div>
+</body>
+
+<script>
+    let N=30;
+    for(let i=0;i<N;i++)
+        document.body.innerHTML+="<p>"+parseInt(Math.random()*100)+"</p>";
+    for(let i=0;i<N;i++)
+        document.body.innerHTML+="<div></div>";
+
+    let t=document.querySelectorAll("p");
+    let b=document.querySelectorAll("div");
+
+    function* merge(i,i1,j1,t,b)
+    { 
+      let j=i1;
+      let l=i;
+      while (i<i1 && j<j1)
+        { 
+          t[i].style.background='yellow';
+          t[j].style.background='yellow';
+          yield 1;
+          if(+t[i].innerHTML<+t[j].innerHTML)
+          {
+            b[l++].innerHTML=t[i++].innerHTML;
+            b[l-1].style.background='lightgreen';
+            t[i-1].innerHTML='';
+            t[i-1].style.background='';
+          }
+         else
+         {
+          b[l++].innerHTML=t[j++].innerHTML; 
+          b[l-1].style.background='lightgreen';
+          t[j-1].innerHTML='';
+          t[j-1].style.background='';
+         }
+        }
+      while(i<i1)
+      { yield 1;
+        b[l++].innerHTML=t[i++].innerHTML;
+        b[l-1].style.background='lightgreen';
+        t[i-1].innerHTML='';
+        t[i-1].style.background='';
+      }
+      while(j<j1)
+      { yield 1;
+        b[l++].innerHTML=t[j++].innerHTML;
+        b[l-1].style.background='lightgreen';
+        t[j-1].innerHTML='';
+        t[j-1].style.background='';
+      }
+
+    }
+    
+
+function* msort(i,j,t,b)
+{
+    if(i+1<j)
+    {
+        let k=Math.floor((i+j)/2);
+        yield* cmsort(i,k,t,b);
+        yield* cmsort(k,j,t,b);
+        yield* merge(i,k,j,b,t);
+    }
+    else
+    { 
+      yield;
+      t[i].style.background='lightgreen';
+    }
+}
+
+function* cmsort(i,j,t,b)
+{
+    if(i+1<j)
+    {
+        let k=Math.floor((i+j)/2);
+        yield* msort(i,k,t,b);
+        yield* msort(k,j,t,b);
+        yield* merge(i,k,j,t,b);
+    }
+    else if(i+1==j)
+    { yield;
+      b[i].innerHTML=t[i].innerHTML;
+      b[i].style.background='lightgreen';
+      t[i].innerHTML=''
+      t[i].style.background='';
+    }
+}
+
+
+let a=msort(0,N,t,b);
+a.next();
+
+let x=setInterval(()=>{if(a.next().done) clearInterval(x)},300);
+
+</script>
+</html>

@@ -1,0 +1,243 @@
+<html>
+</head>
+<style>
+  div>p {
+    width: auto;
+    float: left;
+    margin: 5px;
+    padding: 5px;
+    font-size: 1.2em;
+    border: 1px solid grey;
+    margin-bottom: 20px
+  }
+  div>p.current span{text-decoration: underline;font-weight:bold}
+
+  div.kopiec>p {
+    position: absolute;
+    background:white;
+    z-index:1;
+  }
+  div.kopiec>i {
+    position: absolute;
+    width:2px;
+    height:2px;
+    background:red;
+   
+  }
+
+
+  b {
+    position: absolute;
+    font-size:0.8em;
+    transform: translate(-15px, 30px)
+  }
+</style>
+</head>
+
+<body>
+  <button>Pokaż Kopiec</button>
+  <button>Pokaż Indeksy</button>
+  <button>Sortuj</button>
+  <button>Buduj kopiec</button>
+  <button>Kopiec</button>
+  <button>Od nowa</button>
+  <h1>Heap Sort</h1>
+  Lewy syn (i)=2i+1 <br>
+  Prawy syn (i)=2i+2 <br>
+  Ojciec (i)=[(i-1)/2]<br><br>
+  <div id=kopiec></div>
+  </div>
+</body>
+
+<script>
+
+  let N = 21;
+  let div = document.querySelector("div");
+  for (let i = 0; i < N; i++)
+    div.innerHTML += "<i></i><p><span>" + parseInt(Math.random() * 100) + "</span><b></b></p>";
+  let p = document.querySelectorAll("p");
+  let t = document.querySelectorAll("p>span");
+  let button = document.querySelectorAll("button")
+  var clock;
+
+  button[0].onclick = function () {
+    div.className = div.className ? "" : "kopiec";
+    patyczki();
+  };
+  button[1].onclick = indeksy;
+  button[2].onclick = () => sortuj('sort',1000);
+  button[3].onclick = () => sortuj('build', 2000);
+  button[4].onclick = () => sortuj('build', 0);
+  button[5].onclick = liczby;
+
+  function indeksy() {
+    let b = document.querySelectorAll("p>b");
+    let i = 0;
+    if (b[0].innerHTML == '')
+      for (let x of b) {
+
+        if (b[2 * i + 1])
+          b[2 * i + 1].title = "2*" + i + "+1";
+        if (b[2 * i + 2])
+          b[2 * i + 2].title = "2*" + i + "+2";
+        x.innerHTML = i++;
+      }
+    else
+      for (let x of b)
+        x.innerHTML = '';
+  };
+
+
+  function liczby() {
+    for (let x of t) {
+      x.innerHTML = parseInt(Math.random() * 100);
+      delete x.value;
+      x.parentNode.style.background = '';
+    }
+    clearInterval(clock);
+  }
+
+  function pozycje(i, top, left, offset) {
+    if (i < N) {
+      t[i].parentNode.style.top = top * 55 + 'px';
+      t[i].parentNode.style.left = left + '%';
+      pozycje(2 * i + 1, top + 1, left - offset, offset / 2);
+      pozycje(2 * i + 2, top + 1, left + offset, offset / 2);
+    }
+  }
+
+  pozycje(0, 2, 50, 20);
+
+  function* przesiej(i, n, mode) {
+    let k = i;
+    
+    while (2*i+1<n) {
+      p[i].style.background = 'yellow';
+      p[i].className = 'current';
+      k = 2 * i + 2;
+      if (k < n)
+        p[k].style.background = 'yellow';
+      if (k - 1 < n)
+        p[k - 1].style.background = 'yellow';
+      if(mode)
+        yield 1;
+      if (k < n)
+        p[k].style.background = '';
+      if (k - 1 < n)
+        p[k - 1].style.background = '';
+      if (((k < n) && (+t[k].innerHTML > +t[k - 1].innerHTML) || (--k < n)) && +t[k].innerHTML > +t[i].innerHTML) {
+        p[k].style.background = 'yellow';
+        p[i].style.background = 'yellow';
+        if(mode)
+          yield 1;
+        p[k].style.background = 'pink';
+        p[i].style.background = 'pink';
+        let x = t[k].innerHTML;
+        t[k].innerHTML = t[i].innerHTML;
+        t[i].innerHTML = x;
+        p[k].className='current';
+        p[i].className='';
+        if(mode)
+          yield 1;
+        p[k].style.background = '';
+        p[i].style.background = '';
+        p[i].className = '';
+        p[k].className = '';
+        i = k;
+
+      }
+      else {
+        if (k < n) {
+          p[k].style.background = 'yellow';
+          p[i].style.background = 'yellow';
+          if(mode)
+            yield 1;
+          p[k].style.background = '';
+          p[i].style.background = '';
+          p[i].className = '';
+          p[k].className = '';
+        }
+        return 1;
+      }
+    }
+  }
+
+
+  function* heap_sort(n, mode="sort") {
+
+    // Budowanie kopca
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--)
+      yield* przesiej(i, n, mode);
+    if (mode=="build" || mode=='sift')
+      return;
+    // Opróżnianie kopca
+    for (let i = n - 1; i > 0; i--) {
+      p[i].style.background = "pink";
+      p[0].style.background = "pink";
+      yield 1;
+      yield 1;
+      p[0].style.background = "";
+      p[i].style.background = "lightgreen";
+      let x = t[i].innerHTML;
+      t[i].innerHTML = t[0].innerHTML;
+      t[0].innerHTML = x;
+      yield 1;
+      yield 1;
+      yield* przesiej(0, i, mode);
+    }
+    p[0].style.background = "lightgreen";
+  }
+
+  function patyczek(e)
+    {   
+        if(e.b1 && e.b2)
+        {
+
+            r1=e.b2.getBoundingClientRect();
+            r2=e.b1.getBoundingClientRect();
+            let x1=(r1.left+r1.right)/2;
+            let y1=(r1.top+r1.bottom)/2
+
+            let x2=(r2.left+r2.right)/2;
+            let y2=(r2.top+r2.bottom)/2;
+
+            let d=Math.sqrt((x1-x2)**2+(y1-y2)**2);
+            let alpha=Math.atan2((x1-x2),(y2-y1));
+
+            e.style.left=x1+"px";                
+            e.style.top=y1+"px";                
+       
+            e.style.height=d+'px';
+            e.style.transform='rotate('+(alpha)+'rad)';
+            e.style.transformOrigin='0 0';
+
+        }
+    }
+
+  function patyczki()
+  {
+    let i=0;
+    for(let x of document.querySelectorAll('i'))
+      {
+         i++;
+         x.b2=p[i];
+         x.b1=p[Math.floor((i-1)/2)]
+         patyczek(x);
+      }
+  }
+
+  document.querySelector("h1").onclick = sortuj;
+
+
+  function sortuj(mode ='sort', wait = 1000) {
+    clearInterval(clock);
+    for (let x of t)
+      x.style.background = '';
+    let a = heap_sort(N, mode);
+    clock = setInterval(() => { if (a.next().done) clearInterval(clock) }, wait);
+  }
+window.onresize=patyczki;
+
+</script>
+
+</html>

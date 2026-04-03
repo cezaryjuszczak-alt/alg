@@ -1,0 +1,63 @@
+<html>
+</head>
+<style>
+    p {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey}
+    div{clear:both;height:40px}
+    b{float:left}
+</style>
+</head>
+<body>
+    <h1>Radix Sort</h1>
+    <ul></ul>
+    <section></section>
+    <main></main>
+</body>
+
+<script>
+    let N=20;
+    let M=10;
+    let MAX=1000;
+    let s=document.querySelector("section");
+    let m=document.querySelector("main");
+    for(let i=0;i<N;i++)
+        s.innerHTML+="<p>"+Math.floor(Math.random()*MAX)+"</p>";
+
+    for(let i=0;i<M;i++)
+        m.innerHTML+="<div><b>"+i+": </b></div>";
+    
+    let div=document.querySelectorAll("div");
+
+function *radix_sort()
+{   
+    for(let cyf=1,c=0;cyf<MAX;(cyf*=M),c++)
+    {
+        document.querySelector("ul").innerHTML+="<li> sortowanie (przez zliczanie) wg cyfry "+cyf+"-ek</li>";
+        let p=document.querySelectorAll("p");
+        for(let x of p)
+        {   x.val=+x.innerHTML;
+            let a=x.innerHTML.split("").reverse();
+            if(x.val>=cyf)
+                a[c]="<strong>"+a[c]+"</strong>";
+            x.innerHTML=a.reverse().join("");
+            div[Math.floor(x.val/cyf)%M].append(x);
+            yield;
+        }
+        for(let x of div)
+        {
+            for(let y of x.querySelectorAll("p"))
+            {   
+                yield 1;
+                s.append(y);
+                y.innerHTML=y.val;
+            }
+        }
+    }
+    document.querySelector("ul").innerHTML+="<li>Gotowe!</li>";
+}
+
+let a=radix_sort();
+
+let x=setInterval(()=>{if(a.next().done) clearInterval(x)},500);
+
+</script>
+</html>

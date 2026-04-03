@@ -1,0 +1,84 @@
+<html>
+</head>
+<style>
+    p,div {width:auto; float:left;margin:5px;padding:5px;border:1px solid grey;height:20px;width:20px}
+    div:first-of-type {clear:both}
+</style>
+</head>
+<body>
+    <h1>Merge Sort</h1>
+</div>
+</body>
+
+<script>
+    let N=30;
+    for(let i=0;i<N;i++)
+        document.body.innerHTML+="<p>"+parseInt(Math.random()*100)+"</p>";
+        
+    for(let i=0;i<N;i++)
+        document.body.innerHTML+="<div></div>";
+    let t=document.querySelectorAll("p");
+    let b=document.querySelectorAll("div");
+
+    function* merge(i,i1,j1)
+    { 
+      let j=i1;
+      let l=0;
+      while (i<i1 && j<j1)
+        { 
+          t[i].style.background='yellow';
+          t[j].style.background='yellow';
+          yield 1;
+          if(+t[i].innerHTML<+t[j].innerHTML)
+          {
+            b[l++].innerHTML=t[i++].innerHTML;
+            t[i-1].innerHTML='';
+            t[i-1].style.background='';
+            b[l-1].style.background='lightgreen';
+          }
+         else
+         {
+          b[l++].innerHTML=t[j++].innerHTML; 
+          b[l-1].style.background='lightgreen';
+          t[j-1].innerHTML='';
+          t[j-1].style.background='';
+         }
+        }
+      for(let a=j;a<j1;a++)
+        t[a].style.background='lightgreen';
+      while(i<i1)
+      { yield 1;
+        t[--j].innerHTML=t[--i1].innerHTML;
+        t[j].style.background='lightgreen';
+        t[i1].innerHTML='';
+        t[i1].style.background='';
+      }
+      while(l)
+      { yield 1;
+        t[--j].innerHTML=b[--l].innerHTML;
+        t[j].style.background='lightgreen';
+        b[l].innerHTML='';
+        b[l].style.background='';
+      }
+    }
+    
+
+function* msort(i,j)
+{
+    if(i+1<j)
+    {
+        let k=Math.floor((i+j)/2);
+        yield k;
+        yield* msort(i,k);
+        yield* msort(k,j);
+        yield* merge(i,k,j);
+    }
+}
+
+let a=msort(0,N);
+a.next();
+
+let x=setInterval(()=>{if(a.next().done) clearInterval(x)},300);
+
+</script>
+</html>
