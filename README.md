@@ -2,3 +2,5 @@
 $$
 \sin x
 $$
+
+Mając złożoność $O(n)$
